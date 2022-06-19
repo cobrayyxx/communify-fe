@@ -82,7 +82,7 @@ export default function Community() {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <Reviews commentsData={communityData? communityData.comments: []}/>
+        <Reviews commentsData={communityData? communityData.comments: []} setCommunityData={setCommunityData}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         {communityData.schedule}

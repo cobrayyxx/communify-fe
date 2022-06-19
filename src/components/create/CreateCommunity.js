@@ -1,18 +1,11 @@
-import { Box, Button, Grid, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Grid, Snackbar, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import SendIcon from '@mui/icons-material/Send';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const CreateCommunity = () => {
-  // Data structure
-  // {
-  //   "name": "string",
-  //   "description": "string",
-  //   "location": "string",
-  //   "schedule": "string",
-  //   "picture": "string",
-  //   "contact": "string",
-  //   "comments": []
-  // }
+  let navigate = useNavigate()
   const [inputName, setInputName] = useState('')
   const [inputDesc, setInpuDesc] = useState('')
   const [inputLoc, setInputLoc] = useState('')
@@ -20,8 +13,18 @@ const CreateCommunity = () => {
   const [inputContact, setInputContact] = useState('')
   const [inputImage, setInputImage] = useState('')
 
+  const [open, setOpen] = React.useState(false);
 
-  const handleSubmit = () => {
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     let data = 
       {
         "name": inputName,
@@ -32,6 +35,14 @@ const CreateCommunity = () => {
         "contact": inputContact,
       }
     console.log(data)
+    try{
+      await axios.post(`https://communify-be-api.herokuapp.com/api/v1/community`, data)
+      navigate('/home')
+    } catch(err) {
+      console.log(err)
+      setOpen(true)
+    }
+
   }
 
   return (
@@ -65,7 +76,7 @@ const CreateCommunity = () => {
       label="Image URL"
       id="outlined-size-small"
       placeholder="Your name"
-      value={inputLoc}
+      value={inputImage}
       onChange={(e)=>setInputImage(e.target.value)}
       size="small"
       variant="standard"
@@ -113,6 +124,11 @@ const CreateCommunity = () => {
       sx={{mt:2}}>
         Send
     </Button>
+    <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          An error has occured!
+        </Alert>
+      </Snackbar>
   </Box>
   )
 }

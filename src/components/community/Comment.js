@@ -8,7 +8,7 @@ const Comment = ({commentData}) => {
       {commentData && (
         <>
           <Box key={commentData.id} component="span">
-            <Typography variant="h6">{commentData.name}</Typography>
+            <Typography variant="h6">{commentData.creator}</Typography>
             <Typography  variant="body2">{commentData.content}</Typography>
           </Box>
         </>

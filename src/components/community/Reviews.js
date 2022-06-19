@@ -2,13 +2,42 @@ import { Box, Button, Divider, Stack, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import SendIcon from '@mui/icons-material/Send';
 import Comment from './Comment'
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
-const Reviews = ({commentsData}) => {
-  const [inputName, setInputName] = useState('')
-  const [inputComment, setInputComment] = useState('')
+const Reviews = ({commentsData, setCommunityData}) => {
+  let { id } = useParams()
+  const [inputContent, setInputContent] = useState('')
+  const [inputCreator, setInputCreator] = useState('')
 
-  const handleSubmit = () => {
-    console.log(inputName, inputComment)
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    let data = 
+    {
+      "content": inputContent,
+      "community_id": id,
+      "creator": inputCreator,
+    }
+    try{
+      let newData = await axios.post(`https://communify-be-api.herokuapp.com/api/v1/comment`, data)
+      newData = newData.data
+      commentsData.push(newData)
+      setCommunityData((prevCommunityData) => ({...prevCommunityData, comments:commentsData}))
+    } catch(err) {
+      console.log(err)
+      setOpen(true)
+    }
+
   }
 
   return (
@@ -23,8 +52,8 @@ const Reviews = ({commentsData}) => {
             label="Name"
             id="outlined-size-small"
             placeholder="Your name"
-            value={inputName}
-            onChange={(e)=>setInputName(e.target.value)}
+            value={inputCreator}
+            onChange={(e)=>setInputCreator(e.target.value)}
             size="small"
             variant="standard"
             sx={{width:"100%"}}
@@ -35,8 +64,8 @@ const Reviews = ({commentsData}) => {
             label="Review"
             id="outlined-size-normal" 
             placeholder="Write a review"
-            value={inputComment}
-            onChange={(e)=>setInputComment(e.target.value)}
+            value={inputContent}
+            onChange={(e)=>setInputContent(e.target.value)}
             size="small" 
             variant="standard"
             sx={{width:"100%"}}
